@@ -1,12 +1,66 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Shopcontext } from '../Context/ShopContext'
 import EmptyCart from '../assets/EmptyCart.png'
 import { X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { removeFromCart, updateItemQuantity } from '../Utils/cartSlice'
+import { FaMinus, FaPlus } from 'react-icons/fa'
 
 const Cart = () => {
 
-  const { getTotalCartAmount, all_product, cartItems, removeFromCart, getTotalCartItems } = useContext(Shopcontext)
+  const cartItems = useSelector((store) => store.cartSlice.items);
+  console.log(cartItems)
+
+  const dispatch = useDispatch();
+
+  const handleRemovefromCart = (itemId) => {
+    console.log("handle remove func ecexute");
+    dispatch(removeFromCart(itemId))
+  }
+
+  const [discountCode, setDiscountCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+
+  const calculateTotal = () => {
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    return total;
+  };
+
+  const calculateTotalFinal = () => {
+    const total = cartItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+    return (total - (total * discount) / 100).toFixed(2);
+  };
+
+  const handleApplyDiscount = () => {
+    if (discountCode === "SAVE10") {
+      setDiscount(10);
+    } else if (discountCode === "SAVE20") {
+      setDiscount(20);
+    } else if (discountCode === "SAVE30") {
+      setDiscount(30);
+    } else {
+      setDiscount(0);
+      alert("Invalid Discount Code");
+    }
+  };
+
+  const handleIncrement = (id) => {
+    dispatch(updateItemQuantity({ id, quantity: 1 }));
+  };
+
+  const handleDecrement = (id) => {
+    dispatch(updateItemQuantity({ id, quantity: -1 }));
+  };
+
+
+  // const { getTotalCartAmount, all_product, cartItems, removeFromCart, getTotalCartItems } = useContext(Shopcontext)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -15,7 +69,7 @@ const Cart = () => {
   return (
     <div className='mt-32'>
       <div className='max-w-7xl mx-auto my-10 p-4'>
-        {getTotalCartItems() === 0 ? (
+        {cartItems.length === 0 ? (
           <div className='flex items-center justify-center'>
             <img src={EmptyCart} alt="" />
           </div>
@@ -30,17 +84,34 @@ const Cart = () => {
               <p className='hidden md:block'>Remove</p>
             </div>
             <hr className='bg-gray-300 border-0 h-[2px] my-2' />
-            {all_product.map((e) => {
-              if (cartItems[e.id] > 0) {
+            {cartItems.map((e) => {
+              if (true) {
                 return (
                   <div key={e.id}>
                     <div className='text-gray-500 font-semibold text-sm sm:text-base grid grid-cols-2 sm:grid-cols-3 md:grid-cols-[0.5fr,2fr,1fr,1fr,1fr,1fr] items-center px-4 gap-2'>
                       <img src={e.image} className='h-16 w-16 object-cover' alt="product" />
-                      <p>{e.name}</p>
-                      <p className='hidden md:block'>${e.new_price}</p>
-                      <button className='w-16 h-12 bg-white border border-gray-300'>{cartItems[e.id]}</button>
-                      <p className='hidden md:block'>${e.new_price * cartItems[e.id]}</p>
-                      <X onClick={() => { removeFromCart(e.id) }} className='cursor-pointer' />
+                      <p>{e.title}</p>
+                      <p className='hidden md:block'>${e.price}</p>
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="p-2 bg-gray-200 rounded-full"
+                          onClick={() => handleDecrement(e.id)}
+                          disabled={e.quantity <= 1}
+                        >
+                          <FaMinus />
+                        </button>
+                        <span>{e.quantity}</span>
+                        <button
+                          className="p-2 bg-gray-200 rounded-full"
+                          onClick={() => handleIncrement(e.id)}
+                        >
+                          <FaPlus />
+                        </button>
+                      </div>
+                      {/* <button className='w-16 h-12 bg-white border border-gray-300'>{e.quantity}</button> */}
+                      <p className='hidden md:block'>${e.price * e.quantity}</p>
+                      <X onClick={() => { handleRemovefromCart(e.id) }} className='cursor-pointer' />
                     </div>
                     <hr className='bg-gray-300 border-0 h-[2px] my-2' />
                   </div>
@@ -54,17 +125,24 @@ const Cart = () => {
                 <div>
                   <div className='flex justify-between py-2'>
                     <p>Subtotal</p>
-                    <p>${getTotalCartAmount()}</p>
+                    <p>${calculateTotal()}</p>
                   </div>
                   <hr className='bg-gray-300 border-0 h-[2px] mt-2' />
                   <div className='flex justify-between py-2'>
                     <p>Shipping Fee</p>
                     <p>Free</p>
                   </div>
+                  {discount > 0 && (
+                    <div className='flex justify-between py-2'>
+                      <p>Discount Applied: </p>
+                      <p className='text-green-500'>{discount}%</p>
+                    </div>
+
+                  )}
                   <hr className='bg-gray-300 border-0 h-[2px] my-2' />
                   <div className='flex justify-between text-xl font-semibold py-2'>
                     <h3>Total</h3>
-                    <h3>${getTotalCartAmount()}</h3>
+                    <h3 className='text-red-600'>${calculateTotalFinal()}</h3>
                   </div>
                 </div>
                 <Link to='/login'>
@@ -74,8 +152,11 @@ const Cart = () => {
               <div className='flex-1 w-full text-lg font-semibold'>
                 <p className='text-gray-600'>If you have a promoo code, enter it here:</p>
                 <div className='w-full lg:w-80 mt-2 flex'>
-                  <input type="text" placeholder='Promo Code' className='flex-1 h-14 p-2 bg-gray-200' />
-                  <button className='h-14 w-32 bg-black text-white'>Submit</button>
+                  <input type="text" placeholder='Promo Code'
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    className='flex-1 h-14 p-2 bg-gray-200
+                  ' />
+                  <button onClick={handleApplyDiscount} className='h-14 w-32 bg-black text-white'>Submit</button>
                 </div>
               </div>
             </div>

@@ -5,13 +5,15 @@ import NewCollection from '../components/NewCollection'
 import MidBanner from '../components/MidBanner'
 import TopSellers from '../components/TopSellers'
 import Features from '../components/Features'
+import TopCategory from '../components/TopCategory'
 
 const Home = () => {
   return (
     <>
       <HeroBanner/>
       <MultiBanner/>
-      <NewCollection/>
+      {/* <NewCollection/> */}
+      <TopCategory />
       <MidBanner/>
       <TopSellers/>
       <Features/>

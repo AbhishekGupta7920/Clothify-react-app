@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaUserCircle } from "react-icons/fa";
+import { IoMdNotifications } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const ResponsiveMenu = ({ showMenu, setShowMenu }) => {
@@ -14,19 +15,21 @@ const ResponsiveMenu = ({ showMenu, setShowMenu }) => {
                     </div>
                 </div>
                 <nav className='mt-12'>
-                <ul className='flex flex-col space-y-4 text-xl'>
-                    <Link to='/'><li onClick={()=>setShowMenu(false)}>Home</li></Link>
-                    <Link to='/mens'><li onClick={()=>setShowMenu(false)}>Mens</li></Link>
-                    <Link to='/womens'><li onClick={()=>setShowMenu(false)}>Womens</li></Link>
-                    <Link to='/kids'><li onClick={()=>setShowMenu(false)}>Kids</li></Link>
-                    <Link to='/login'><button onClick={()=>setShowMenu(false)} className='bg-red-500 text-white px-4 py-1 rounded-md'>Login</button></Link>
-                    
-                </ul>
+                    <ul className='flex flex-col space-y-4 text-xl'>
+                        <Link to='/'><li onClick={() => setShowMenu(false)}>Home</li></Link>
+                        <Link to='/mens'><li onClick={() => setShowMenu(false)}>Mens</li></Link>
+                        <Link to='/womens'><li onClick={() => setShowMenu(false)}>Womens</li></Link>
+                        <Link to='/electronics'><li onClick={() => setShowMenu(false)}>Electronics</li></Link>
+                        <Link to='/jewellery'><li onClick={() => setShowMenu(false)}>Jewellery</li></Link>
+                        <Link to='/login'><button onClick={() => setShowMenu(false)} className='bg-red-500 text-white px-4 py-1 rounded-md'>Login</button></Link>
+                        <Link to="/notifications" ><button onClick={() => setShowMenu(false)} className='bg-red-500 text-white px-4 py-1 rounded-md'>Notifications</button></Link>
+  
+                    </ul>
                 </nav>
             </div>
             <div className=''>
                 <h1>
-                    Made with ❤️ by Rohit
+                    Made with ❤️ by Abhishek Gupta
                 </h1>
             </div>
         </div>
